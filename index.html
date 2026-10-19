@@ -72,11 +72,12 @@ h1, h2, h3 { color: var(--ink); letter-spacing: -.02em; margin: 0; }
 
 /* Header */
 .top { background: rgba(248,251,249,.92); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px); }
-.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; flex-wrap: wrap; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding-block: 10px; flex-wrap: nowrap; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-name { font-weight: 600; font-size: 16px; line-height: 1.1; color: var(--ink); }
 .brand-name small { display: block; font-family: var(--mono); font-weight: 400; font-size: 10.5px; letter-spacing: .06em; color: var(--text); margin-top: 2px; }
-.event { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; color: var(--purple); background: var(--lavender); border-radius: 999px; padding: 5px 12px; }
+.event { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; color: var(--purple); background: var(--lavender); border-radius: 999px; padding: 5px 12px; white-space: nowrap; flex: none; }
+@media (max-width: 520px) { .event { font-size: 10.5px; letter-spacing: .1em; padding: 4px 10px; } .event .ev-city { display: none; } .brand-name { font-size: 15px; } }
 
 /* Buttons: OHS pills */
 .btn {
@@ -335,7 +336,7 @@ html.present.cycling .present-hint { opacity: .55; }
       <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       <span class="brand-name">Open Health Stack<small>Software Foundation</small></span>
     </a>
-    <span class="event">GDHF 2026 · BANGKOK</span>
+    <span class="event">GDHF 2026<span class="ev-city"> · BANGKOK</span></span>
   </div>
 </header>
 
