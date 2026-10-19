@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Try the OHS Demo · GDHF 2026</title>
+<meta name="description" content="Try the antenatal care demo built on the Open Health Stack FHIR Foundation Libraries: one Kotlin codebase on Android, iOS, web and desktop.">
+<meta name="theme-color" content="#F8FBF9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============================================================
+   OHS BRAND TOKENS (sampled from ohs.foundation)
+   ============================================================ */
+:root {
+  --bg: #F8FBF9;            /* page */
+  --bg-alt: #F0F5F3;        /* alternate section */
+  --surface: #FFFFFF;       /* cards */
+  --line: #E1E8E5;          /* borders */
+  --ink: #182224;           /* headings */
+  --text: #4F5A5C;          /* body */
+  --purple: #4D407F;        /* primary: buttons, accent words */
+  --purple-2: #6F62B2;
+  --purple-3: #7467AD;
+  --lavender: #F0EFFE;      /* pill / icon tile bg */
+  --teal: #3D85A3;
+  --teal-2: #3B8389;
+  --sky: #E5F3FA;
+  --mint: #E6F4F4;
+  --dark: #192325;          /* footer */
+  --dark-2: #1F292B;
+  --on-dark: #F3F6F5;
+  --on-dark-muted: #A7B3B2;
+  --eyebrow-dark: #8D83DC;
+  --grad-a: #4B407D;        /* "The ask" gradient */
+  --grad-b: #113F4E;
+  --font: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font); background: var(--bg); color: var(--text);
+  font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+h1, h2, h3 { color: var(--ink); letter-spacing: -.02em; margin: 0; }
+
+/* Eyebrow: mono, spaced, with a short rule */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--purple); margin: 0 0 16px;
+}
+.eyebrow::before { content: ""; width: 22px; height: 1.5px; background: currentColor; opacity: .6; }
+
+/* Logo mark: the OHS 2x2 blocks */
+.mark { display: grid; grid-template-columns: repeat(2, 13px); gap: 3px; flex: none; }
+.mark i { width: 13px; height: 13px; border-radius: 3.5px; display: block; }
+.mark i:nth-child(1) { background: var(--purple-2); }
+.mark i:nth-child(2) { background: var(--teal); }
+.mark i:nth-child(3) { background: var(--purple-3); }
+.mark i:nth-child(4) { background: var(--purple); }
+
+/* Header */
+.top { background: rgba(248,251,249,.92); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-name { font-weight: 600; font-size: 16px; line-height: 1.1; color: var(--ink); }
+.brand-name small { display: block; font-family: var(--mono); font-weight: 400; font-size: 10.5px; letter-spacing: .06em; color: var(--text); margin-top: 2px; }
+.event { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; color: var(--purple); background: var(--lavender); border-radius: 999px; padding: 5px 12px; }
+
+/* Buttons: OHS pills */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 54px; padding: 0 28px; border-radius: 999px; font-weight: 600; font-size: 17px;
+  text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .15s, background .15s, border-color .15s;
+}
+.btn:focus-visible, .card:focus-visible, .chip:focus-visible { outline: 3px solid var(--purple-2); outline-offset: 3px; }
+.btn-primary { background: var(--purple); color: #fff; }
+.btn-primary:hover { background: #42376e; transform: translateY(-1px); }
+.btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { border-color: var(--purple-3); }
+.btn-white { background: #fff; color: var(--purple); }
+.btn-outline-light { color: #fff; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.06); }
+.btn-outline-light:hover { border-color: #fff; }
+.btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.arrow { width: 18px; height: 18px; }
+
+/* Hero */
+.hero { padding-block: 44px 52px; }
+.hero h1 { font-size: clamp(42px, 9vw, 76px); line-height: 1; font-weight: 700; letter-spacing: -.035em; margin-bottom: 20px; text-wrap: balance; }
+.hero h1 em { font-style: normal; color: var(--purple); }
+.hero .lead { font-size: clamp(18px, 2.4vw, 22px); line-height: 1.5; max-width: 44ch; margin: 0 0 26px; }
+.platforms { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 30px; padding: 0; list-style: none; }
+.platforms li { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; color: var(--ink); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.cta-row .btn-primary { flex: 1 1 260px; max-width: 360px; }
+.notice {
+  margin-top: 20px; max-width: 520px; font-size: 14.5px; line-height: 1.5;
+  background: var(--lavender); border-radius: 14px; padding: 12px 16px; color: var(--purple);
+}
+.notice strong { font-weight: 700; }
+
+/* Sections */
+section.block { padding-block: 56px; }
+section.alt { background: var(--bg-alt); }
+.block h2 { font-size: clamp(30px, 5vw, 44px); line-height: 1.08; font-weight: 700; margin-bottom: 12px; text-wrap: balance; }
+.sub { font-size: 18px; max-width: 58ch; margin: 0 0 28px; }
+
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+  padding: 24px; display: grid; gap: 8px; align-content: start; text-decoration: none; color: var(--text);
+  transition: border-color .15s, transform .15s, box-shadow .15s; position: relative; min-width: 0;
+}
+a.card:hover { border-color: var(--purple-3); transform: translateY(-2px); box-shadow: 0 10px 30px -18px rgba(77,64,127,.45); }
+.tile { width: 50px; height: 50px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 8px; }
+.tile svg { width: 24px; height: 24px; }
+.t-teal { background: var(--sky); color: var(--teal); }
+.t-mint { background: var(--mint); color: var(--teal-2); }
+.t-lav { background: var(--lavender); color: var(--purple); }
+.card .k { font-weight: 700; font-size: 20px; color: var(--ink); letter-spacing: -.01em; }
+.card .d { font-size: 15.5px; line-height: 1.5; }
+.card .cta { font-weight: 600; font-size: 15.5px; color: var(--purple); margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.card[aria-disabled="true"] { pointer-events: none; }
+.card[aria-disabled="true"] .cta { color: var(--text); opacity: .7; }
+.card[aria-disabled="true"] .cta::after { content: "· available soon"; font-weight: 400; white-space: nowrap; }
+.card[aria-disabled="true"] .cta .arrow { display: none; }
+
+/* Libraries: each row opens its GitHub repo */
+.lib-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); overflow: hidden; }
+.lib-list li + li { border-top: 1px solid var(--line); }
+.lib {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) 76px 20px; align-items: center; gap: 8px 20px;
+  padding: 16px 22px; text-decoration: none; color: var(--text); transition: background .15s;
+}
+.lib:hover { background: var(--lavender); }
+.lib:focus-visible { outline: 3px solid var(--purple-2); outline-offset: -3px; }
+.lib-name { color: var(--ink); font-weight: 700; font-size: 17px; display: grid; gap: 2px; min-width: 0; }
+.lib-name code { font-family: var(--mono); font-weight: 400; font-size: 12.5px; color: var(--purple); overflow-wrap: anywhere; }
+.lib-desc { font-size: 15.5px; line-height: 1.45; min-width: 0; }
+.lib-go { width: 18px; height: 18px; color: var(--purple); opacity: .55; transition: opacity .15s, transform .15s; }
+.lib:hover .lib-go { opacity: 1; transform: translate(2px, -2px); }
+.status { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; border-radius: 999px; padding: 3px 10px; white-space: nowrap; justify-self: start; }
+.s-rc { background: var(--sky); color: var(--teal); }
+.s-beta { background: var(--mint); color: var(--teal-2); }
+.s-alpha { background: var(--lavender); color: var(--purple); }
+@media (max-width: 640px) {
+  .lib { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name status" "desc go"; padding: 16px 18px; }
+  .lib-name { grid-area: name; } .status { grid-area: status; justify-self: end; }
+  .lib-desc { grid-area: desc; } .lib-go { grid-area: go; justify-self: end; }
+}
+
+/* Build with AI */
+.ai .agents { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.agent { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 22px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.agent h3 { font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.agent h3 .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--purple-3); }
+.agent .hint { font-size: 14px; margin: 0; }
+.cmd { position: relative; background: var(--dark); color: #E6EEEE; border-radius: 12px; padding: 12px 72px 12px 14px; font-family: var(--mono); font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 46px; }
+.cmd .p { color: var(--eyebrow-dark); user-select: none; }
+.copy { position: absolute; top: 9px; right: 9px; min-width: 56px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #fff; border-radius: 8px; font: 600 11.5px var(--font); padding: 5px 8px; cursor: pointer; }
+.copy:hover { border-color: rgba(255,255,255,.45); }
+.copy:focus-visible { outline: 2px solid var(--eyebrow-dark); outline-offset: 2px; }
+.ai-proof { margin-top: 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--lavender); border-radius: 22px; padding: 22px 24px; }
+.ai-proof p { margin: 0; color: var(--ink); font-size: 16px; }
+.ai-proof p strong { color: var(--purple); }
+.ai-proof .links { justify-content: flex-end; }
+@media (max-width: 900px) { .ai .agents { grid-template-columns: 1fr; } .ai-proof { grid-template-columns: 1fr; } .ai-proof .links { justify-content: flex-start; } }
+
+/* The ask band */
+.ask { background: linear-gradient(120deg, var(--grad-a), var(--grad-b)); color: var(--on-dark); padding-block: 64px; text-align: center; }
+.ask .eyebrow { color: #fff; opacity: .85; }
+.ask .eyebrow::before { display: none; }
+.ask h2 { color: #fff; font-size: clamp(30px, 5.5vw, 48px); line-height: 1.08; font-weight: 700; margin: 0 auto 14px; max-width: 18ch; text-wrap: balance; }
+.ask p { color: rgba(243,246,245,.85); font-size: 18.5px; max-width: 46ch; margin: 0 auto 30px; }
+.ask .cta-row { justify-content: center; }
+.ask .cta-row .btn { font-size: 16px; padding: 0 20px; white-space: nowrap; }
+.ask-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin-top: 26px; }
+.ask-links a { color: #fff; opacity: .85; font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.35); padding-bottom: 2px; }
+.ask-links a:hover { opacity: 1; border-bottom-color: #fff; }
+.ask-links a[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+@media (max-width: 560px) { .ask .cta-row { flex-direction: column; align-items: center; } .ask .cta-row .btn { width: 100%; max-width: 340px; padding: 0 18px; font-size: 16px; } }
+
+/* Author */
+.author { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 26px; }
+.avatar { width: 84px; height: 84px; border-radius: 22px; background: var(--lavender); color: var(--purple); display: grid; place-items: center; font-weight: 700; font-size: 32px; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar img.photo { width: 100%; height: 100%; object-fit: contain; background: #ECEBE9; }
+
+.author h3 { font-size: 24px; font-weight: 700; }
+.author p { margin: 4px 0 16px; font-size: 16px; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; font-size: 15px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 18px; color: var(--ink); background: var(--surface); }
+.chip:hover { border-color: var(--purple-3); }
+.chip.strong { background: var(--purple); color: #fff; border-color: var(--purple); }
+.chip[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+@media (max-width: 520px) { .author { grid-template-columns: 1fr; } }
+
+/* Footer */
+footer { background: var(--dark); color: var(--on-dark-muted); padding-block: 44px; font-size: 15px; }
+footer .wrap { display: grid; gap: 14px; }
+footer .brand-name { color: #fff; }
+footer .brand-name small { color: var(--on-dark-muted); }
+footer a { color: #fff; text-decoration: none; }
+footer .fine { border-top: 1px solid rgba(255,255,255,.1); padding-top: 18px; margin-top: 8px; font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Hero visual: the stack */
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 48px; align-items: center; }
+.hero-copy { min-width: 0; }
+.stack { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 20px; display: grid; gap: 10px; box-shadow: 0 30px 60px -40px rgba(24,34,36,.35); min-width: 0; }
+.layer { border-radius: 18px; padding: 16px 18px; display: grid; gap: 10px; }
+.lbl { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--text); }
+.layer strong { color: var(--ink); font-size: 17px; font-weight: 700; }
+.layer-apps { background: var(--bg-alt); border: 1px solid var(--line); }
+.devices { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.devices li { display: grid; justify-items: center; gap: 6px; font-size: 12.5px; color: var(--ink); font-weight: 600; }
+.devices .tile { width: 46px; height: 46px; margin: 0; border-radius: 12px; border: 1px solid rgba(24,34,36,.06); }
+.devices .tile svg { width: 22px; height: 22px; }
+.joint { text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--text); }
+.layer-core { background: linear-gradient(135deg, var(--sky), var(--lavender)); }
+.core-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.share { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; background: var(--purple); color: #fff; border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+.libs-mini { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.libs-mini li { background: rgba(255,255,255,.75); border-radius: 10px; padding: 8px 10px; font-size: 13px; font-weight: 600; color: var(--ink); text-align: center; }
+.layer-base { background: var(--dark); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.layer-base .lbl { color: var(--on-dark-muted); }
+.layer-base strong { color: #fff; }
+.pills { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.pills li { font-family: var(--mono); font-size: 12px; color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 5px 11px; }
+@media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } .stack { max-width: 560px; } }
+@media (max-width: 600px) { .stack { display: none; } }
+
+/* Why it matters: the challenge -> the answer */
+.why { padding-block: 8px 64px; }
+.why-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+.panel { border-radius: 22px; padding: 28px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.panel-challenge { background: var(--surface); border: 1px solid var(--line); }
+.panel-answer { background: var(--lavender); }
+.panel .tag { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--purple); }
+.stats { display: grid; gap: 16px; margin: 0; }
+.stat { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: baseline; }
+.stat dt { font-weight: 800; font-size: 40px; line-height: 1; letter-spacing: -.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat dt small { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: 0; }
+.stat dd { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--ink); }
+.stat dd em { display: block; font-style: normal; color: var(--text); font-size: 14px; margin-top: 2px; }
+.so { border-top: 1px solid var(--line); padding-top: 16px; margin: 0; font-size: 16px; line-height: 1.5; color: var(--ink); }
+.so strong { color: var(--purple); }
+.headline { display: grid; gap: 4px; }
+.headline .big { font-weight: 800; font-size: clamp(48px, 6vw, 68px); line-height: 1; letter-spacing: -.035em; color: var(--purple); }
+.headline p { margin: 0; font-size: 16px; color: var(--ink); }
+.chart { background: var(--surface); border-radius: 16px; padding: 18px 20px 16px; display: grid; gap: 12px; }
+.chart h3 { font-size: 15px; font-weight: 700; letter-spacing: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--text); margin: -4px 0 0; padding: 0; list-style: none; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.c-before { background: #2E9AB8; }
+.c-added { background: #5B4A99; }
+.bars { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bar-row { display: grid; grid-template-columns: 112px minmax(0, 1fr) 118px; gap: 12px; align-items: center; }
+.bar-row .rg { font-size: 14.5px; color: var(--ink); font-weight: 600; }
+.track { position: relative; height: 22px;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%; background-position: -1px 0; }
+.track::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: var(--line); }
+.seg { position: absolute; top: 0; bottom: 0; outline: none; }
+.seg.before { left: 0; border-radius: 4px 0 0 4px; background: #2E9AB8; }
+.seg.added { border-radius: 0 4px 4px 0; background: #5B4A99; border-left: 2px solid var(--surface); }
+.seg:hover, .seg:focus-visible { filter: brightness(1.12); }
+.seg .tip {
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  background: var(--ink); color: #fff; font-size: 12.5px; padding: 6px 9px; border-radius: 8px; opacity: 0; transition: opacity .12s; z-index: 2;
+}
+.seg:hover .tip, .seg:focus-visible .tip { opacity: 1; }
+.bar-row .val { font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-row .val b { color: var(--ink); }
+.axis { display: grid; grid-template-columns: 112px minmax(0, 1fr) 118px; gap: 12px; font-size: 11.5px; color: var(--text); font-family: var(--mono); }
+.axis div { display: flex; justify-content: space-between; }
+.sources { font-size: 13px; margin: 16px 0 0; color: var(--text); opacity: .85; }
+@media (max-width: 900px) { .why-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) {
+  .panel { padding: 22px 18px; }
+  .stat { grid-template-columns: 92px 1fr; } .stat dt { font-size: 32px; }
+  .bar-row, .axis { grid-template-columns: 64px minmax(0, 1fr); }
+  .bar-row .val { grid-column: 2; font-size: 13px; margin-top: -6px; }
+  .axis span.pad-r { display: none; }
+}
+
+/* ============================================================
+   PRESENTER MODE — open the page with #present at the end of the URL
+   ============================================================ */
+html.present body { zoom: 1.3; }
+html.present section { scroll-margin-top: 70px; }
+html.present .wrap { max-width: 1140px; margin-left: 4vw; margin-right: 0; }
+html.present .ask .wrap { text-align: left; }
+html.present .ask h2, html.present .ask p { margin-left: 0; }
+html.present .ask .cta-row, html.present .ask-links { justify-content: flex-start; }
+.qr-dock { display: none; }
+html.present .qr-dock {
+  display: grid; justify-items: center; gap: 8px;
+  position: fixed; right: max(24px, env(safe-area-inset-right)); bottom: max(24px, env(safe-area-inset-bottom)); z-index: 20;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 16px 16px 14px;
+  box-shadow: 0 18px 50px -20px rgba(24,34,36,.45); width: 220px; text-align: center;
+}
+.qr-dock .qr { width: 188px; height: 188px; display: grid; place-items: center; }
+.qr-dock .qr svg { width: 100%; height: 100%; display: block; }
+.qr-dock strong { color: var(--ink); font-size: 16px; line-height: 1.25; }
+.qr-dock span { font-family: var(--mono); font-size: 11.5px; color: var(--purple); overflow-wrap: anywhere; }
+.present-hint { display: none; }
+html.present .present-hint {
+  display: block; position: fixed; left: max(20px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 20;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); opacity: 0; transition: opacity .4s;
+}
+html.present.cycling .present-hint { opacity: .55; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" data-link="ohs" href="#">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="brand-name">Open Health Stack<small>Software Foundation</small></span>
+    </a>
+    <span class="event">GDHF 2026 · BANGKOK</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+    <p class="eyebrow">Solution demonstration</p>
+    <h1>One codebase,<br><em>every platform.</em></h1>
+    <p class="lead">An antenatal care app built on the OHS FHIR Foundation Libraries. Same Kotlin code, same forms and rules, on every device. Try it yourself.</p>
+    <ul class="platforms" aria-label="Platforms">
+      <li>Android</li><li>iOS</li><li>Web</li><li>macOS</li><li>Windows</li>
+    </ul>
+    <div class="cta-row">
+      <a class="btn btn-primary" data-link="web" href="#">
+        Try it in your browser
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#install">Install the app</a>
+    </div>
+    <p class="notice"><strong>Demo only.</strong> Please don't enter real patient information. Entries are visible to others and cleared after the conference.</p>
+    </div>
+    <figure class="stack" aria-label="One shared Kotlin codebase runs on Android, iOS, web and desktop, built on HL7 FHIR">
+      <div class="layer layer-apps">
+        <span class="lbl">Runs on</span>
+        <strong>Every platform</strong>
+        <ul class="devices"><li><span class="tile t-teal"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 9h10a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-7a1 1 0 0 1 1-1zm1.2-4.6.9 1.5A6 6 0 0 1 12 5a6 6 0 0 1 2.9.9l.9-1.5.9.5-.9 1.5A5.9 5.9 0 0 1 18 8H6a5.9 5.9 0 0 1 2.2-1.6l-.9-1.5z"/></svg></span><span>Android</span></li><li><span class="tile t-lav"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.2 1.8-3.2 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.9-.8-1.5 0-2.8.9-3.6 2.2-1.5 2.7-.4 6.6 1.1 8.8.7 1.1 1.6 2.2 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.2-.9-2.2-3.6zM14.3 6c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.6.6-1 1.6-.9 2.6 1 .1 1.9-.5 2.5-1.2z"/></svg></span><span>iOS</span></li><li><span class="tile t-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span>Web</span></li><li><span class="tile t-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><span>Desktop</span></li></ul>
+      </div>
+      <span class="joint" aria-hidden="true">▼ from one shared codebase</span>
+      <div class="layer layer-core">
+        <div class="core-head"><div><span class="lbl">Kotlin Multiplatform</span><strong>FHIR Foundations</strong></div><span class="share">94% shared</span></div>
+        <ul class="libs-mini"><li>Kotlin FHIR</li><li>FHIRPath</li><li>Data Capture</li><li>Engine</li><li>Workflow</li><li>Knowledge</li></ul>
+      </div>
+      <span class="joint" aria-hidden="true">▼ grounded in</span>
+      <div class="layer layer-base">
+        <div><span class="lbl">The base</span><strong>Open standards</strong></div>
+        <ul class="pills"><li>HL7® FHIR®</li><li>R4 · R4B · R5</li></ul>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="why" id="why" aria-labelledby="why-h">
+  <div class="wrap">
+    <p class="eyebrow">Why it matters</p>
+    <h2 id="why-h" class="visually-hidden">Why it matters</h2>
+    <div class="why-grid">
+      <div class="panel panel-challenge">
+        <span class="tag">The challenge</span>
+        <dl class="stats">
+          <div class="stat"><dt>80%</dt><dd>of countries with health data regulation mandate or advise FHIR<em>up from 56% in 2023</em></dd></div>
+          <div class="stat"><dt>76<small>/101</small></dt><dd>cite lack of FHIR knowledge, the top challenge</dd></div>
+          <div class="stat"><dt>48<small>/101</small></dt><dd>cite high investment cost</dd></div>
+        </dl>
+        <p class="so">And every platform still gets built separately: Android, iOS, web and desktop. <strong>Four builds, four budgets.</strong></p>
+      </div>
+      <div class="panel panel-answer">
+        <span class="tag">The answer</span>
+        <div class="headline">
+          <span class="big">94%</span>
+          <p>of the code shared. One Kotlin codebase runs on Android, iOS, web and desktop.</p>
+        </div>
+        <figure class="chart" style="margin:0">
+          <h3>Share of screens reached, by region</h3>
+          <ul class="legend">
+            <li><i class="c-before"></i>Android only</li>
+            <li><i class="c-added"></i>Added with KMP (Windows, iOS, macOS)</li>
+          </ul>
+          <ul class="bars">
+          <li class="bar-row">
+            <span class="rg"><span class="full">Africa</span></span>
+            <div class="track" role="img" aria-label="Africa: 60.7% with Android only, 99.9% with KMP">
+              <span class="seg before" tabindex="0" style="width:60.7%"><span class="tip">Android only: 60.7%</span></span>
+              <span class="seg added" tabindex="0" style="left:60.7%;width:39.2%"><span class="tip">Added with KMP: +39.2 pts</span></span>
+            </div>
+            <span class="val">60.7% → <b>99.9%</b></span>
+          </li>
+          <li class="bar-row">
+            <span class="rg"><span class="full">Asia</span></span>
+            <div class="track" role="img" aria-label="Asia: 54.6% with Android only, 99.7% with KMP">
+              <span class="seg before" tabindex="0" style="width:54.6%"><span class="tip">Android only: 54.6%</span></span>
+              <span class="seg added" tabindex="0" style="left:54.6%;width:45.1%"><span class="tip">Added with KMP: +45.1 pts</span></span>
+            </div>
+            <span class="val">54.6% → <b>99.7%</b></span>
+          </li>
+          <li class="bar-row">
+            <span class="rg"><span class="full">Europe</span></span>
+            <div class="track" role="img" aria-label="Europe: 37.7% with Android only, 99.3% with KMP">
+              <span class="seg before" tabindex="0" style="width:37.7%"><span class="tip">Android only: 37.7%</span></span>
+              <span class="seg added" tabindex="0" style="left:37.7%;width:61.6%"><span class="tip">Added with KMP: +61.6 pts</span></span>
+            </div>
+            <span class="val">37.7% → <b>99.3%</b></span>
+          </li>
+          <li class="bar-row">
+            <span class="rg"><span class="full">United States</span></span>
+            <div class="track" role="img" aria-label="United States: 24.2% with Android only, 96.3% with KMP">
+              <span class="seg before" tabindex="0" style="width:24.2%"><span class="tip">Android only: 24.2%</span></span>
+              <span class="seg added" tabindex="0" style="left:24.2%;width:72.1%"><span class="tip">Added with KMP: +72.1 pts</span></span>
+            </div>
+            <span class="val">24.2% → <b>96.3%</b></span>
+          </li>
+          </ul>
+          <div class="axis" aria-hidden="true"><span></span><div><span>0%</span><span>50%</span><span>100%</span></div><span class="pad-r"></span></div>
+        </figure>
+      </div>
+    </div>
+    <p class="sources">Sources: Firely, The State of FHIR 2026 (101 respondents, 63 countries); StatCounter, share of web page views by OS, Sep 2026.</p>
+  </div>
+</section>
+
+<section class="block alt" id="install" aria-labelledby="dl">
+  <div class="wrap">
+    <p class="eyebrow">Install</p>
+    <h2 id="dl">The same app, on your device.</h2>
+    <p class="sub">Built from the same shared code.</p>
+    <div class="grid">
+      <a class="card" data-link="android" data-os="android" href="#">
+        <span class="tile t-teal"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 9h10a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-7a1 1 0 0 1 1-1zm1.2-4.6.9 1.5A6 6 0 0 1 12 5a6 6 0 0 1 2.9.9l.9-1.5.9.5-.9 1.5A5.9 5.9 0 0 1 18 8H6a5.9 5.9 0 0 1 2.2-1.6l-.9-1.5zM9.5 6.5a.6.6 0 1 0 0 1.2.6.6 0 0 0 0-1.2zm5 0a.6.6 0 1 0 0 1.2.6.6 0 0 0 0-1.2z"/></svg></span>
+        <span class="k">Android</span>
+        <span class="d">APK download. When asked, allow installs from your browser.</span>
+        <span class="cta">Download APK <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card" data-link="ios" data-os="ios" href="#">
+        <span class="tile t-lav"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.2 1.8-3.2 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.9-.8-1.5 0-2.8.9-3.6 2.2-1.5 2.7-.4 6.6 1.1 8.8.7 1.1 1.6 2.2 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.2-.9-2.2-3.6zM14.3 6c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.6.6-1 1.6-.9 2.6 1 .1 1.9-.5 2.5-1.2z"/></svg></span>
+        <span class="k">iPhone</span>
+        <span class="d">Opens in TestFlight, Apple's beta app.</span>
+        <span class="cta">Get it on TestFlight <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card" data-link="macos" data-os="macos" href="#">
+        <span class="tile t-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+        <span class="k">macOS</span>
+        <span class="d">Desktop app for Mac.</span>
+        <span class="cta">Download for Mac <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card" data-link="windows" data-os="windows" href="#">
+        <span class="tile t-teal"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3zm8.5-1.2L21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zm8.5 0H21V21l-9.5-1.3z"/></svg></span>
+        <span class="k">Windows</span>
+        <span class="d">If SmartScreen appears, choose More info, then Run anyway.</span>
+        <span class="cta">Download for Windows <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="inside">
+  <div class="wrap">
+    <p class="eyebrow">FHIR Foundations</p>
+    <h2 id="inside">Six libraries, one codebase.</h2>
+    <p class="sub">The demo uses forms, FHIRPath calculations, extraction, on-device storage, search and sync, all from shared Kotlin code. Tap a library to open it on GitHub.</p>
+    <ul class="lib-list" aria-label="Libraries, each links to its GitHub repository">
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhir" target="_blank" rel="noopener">
+          <span class="lib-name">Kotlin FHIR<code>kotlin-fhir</code></span>
+          <span class="lib-desc">FHIR resource models: R4, R4B, R5</span>
+          <span class="status s-rc">RC</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhirpath" target="_blank" rel="noopener">
+          <span class="lib-name">Kotlin FHIRPath<code>kotlin-fhirpath</code></span>
+          <span class="lib-desc">FHIRPath engine, official test suite</span>
+          <span class="status s-beta">BETA</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhir-data-capture" target="_blank" rel="noopener">
+          <span class="lib-name">Data Capture<code>kotlin-fhir-data-capture</code></span>
+          <span class="lib-desc">Questionnaire rendering and response capture</span>
+          <span class="status s-alpha">ALPHA</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhir-engine" target="_blank" rel="noopener">
+          <span class="lib-name">Engine<code>kotlin-fhir-engine</code></span>
+          <span class="lib-desc">On-device storage and sync</span>
+          <span class="status s-alpha">ALPHA</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhir-workflow" target="_blank" rel="noopener">
+          <span class="lib-name">Workflow<code>kotlin-fhir-workflow</code></span>
+          <span class="lib-desc">Clinical decision support and measures</span>
+          <span class="status s-alpha">ALPHA</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+        <li><a class="lib" href="https://github.com/ohs-foundation/kotlin-fhir-knowledge" target="_blank" rel="noopener">
+          <span class="lib-name">Knowledge<code>kotlin-fhir-knowledge</code></span>
+          <span class="lib-desc">Loading and managing implementation guides</span>
+          <span class="status s-alpha">ALPHA</span>
+          <svg class="lib-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a></li>
+    </ul>
+    <div class="cta-row" style="margin-top:22px">
+      <a class="btn btn-ghost" data-link="github" href="#">View the source on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="block alt ai" id="ai" aria-labelledby="ai-h">
+  <div class="wrap">
+    <p class="eyebrow">Build with AI</p>
+    <h2 id="ai-h">Your coding agent, fluent in FHIR.</h2>
+    <p class="sub">OHS agent skills teach Antigravity, Claude and Codex to build on the tested FHIR Foundations libraries instead of writing FHIR code from scratch. Standards compliance comes with the foundations.</p>
+    <div class="agents">
+<!-- VERIFY: the marketplace and plugin names below follow the agent-skills repo plan; confirm before publishing -->
+        <div class="agent">
+          <h3><span class="dot" aria-hidden="true"></span>Antigravity CLI</h3>
+          <p class="hint">Run in your terminal.</p>
+          <div class="cmd"><span class="p">$ </span><code>agy plugin install https://github.com/ohs-foundation/agent-skills</code><button class="copy" type="button">Copy</button></div>
+        </div>
+        <div class="agent">
+          <h3><span class="dot" aria-hidden="true"></span>Claude Code</h3>
+          <p class="hint">Run as two separate prompts in Claude Code.</p>
+          <div class="cmd"><span class="p">$ </span><code>/plugin marketplace add ohs-foundation/agent-skills</code><button class="copy" type="button">Copy</button></div>
+          <div class="cmd"><span class="p">$ </span><code>/plugin install ohs@agent-skills</code><button class="copy" type="button">Copy</button></div>
+        </div>
+        <div class="agent">
+          <h3><span class="dot" aria-hidden="true"></span>Codex</h3>
+          <p class="hint">Run in your terminal.</p>
+          <div class="cmd"><span class="p">$ </span><code>codex plugin marketplace add ohs-foundation/agent-skills</code><button class="copy" type="button">Copy</button></div>
+          <div class="cmd"><span class="p">$ </span><code>codex plugin add ohs@agent-skills</code><button class="copy" type="button">Copy</button></div>
+        </div>
+    </div>
+    <div class="ai-proof">
+      <p><strong>Part of AI Commons,</strong> the Open Health Stack pillar for safe, verifiable AI in global health.</p>
+      <div class="links">
+        <a class="chip strong" data-link="agent_video" href="#">Watch an agent build this app</a>
+        <a class="chip" data-link="agent_skills" href="#">agent-skills on GitHub</a>
+        <a class="chip" data-link="ai_commons" href="#">AI Commons</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ask" aria-labelledby="join">
+  <div class="wrap">
+    <p class="eyebrow">Get involved</p>
+    <h2 id="join">Help build the future of global digital health.</h2>
+    <p>Open Health Stack is a neutral, community-owned Linux Foundation project. Build with it, deploy it, follow along, or join as a member.</p>
+    <div class="cta-row">
+      <a class="btn btn-white" data-link="deploy" href="#">Partner with OHS</a>
+      <a class="btn btn-outline-light" data-link="membership" href="#">Become a member</a>
+      <a class="btn btn-outline-light" data-link="discord" href="#">Join the Discord</a>
+    </div>
+    <div class="ask-links">
+      <a data-link="mailing" href="#">Subscribe to the newsletter</a>
+      <a data-link="calendar" href="#">Subscribe to the community calendar</a>
+      <a data-link="ohs" href="#">Visit ohs.foundation</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="by">
+  <div class="wrap">
+    <p class="eyebrow">Get in touch</p>
+    <div class="author">
+      <div class="avatar" id="avatar"><img src="data:image/jpeg;base64,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" alt="Fikri Milano" class="photo"></div>
+      <div>
+        <h3 id="by">Fikri Milano</h3>
+        <p>Lead maintainer, OHS FHIR Foundation Libraries · Ona</p>
+        <div class="links">
+          <a class="chip strong" data-link="contact" href="#">Talk to me about the libraries</a>
+          <a class="chip" data-link="me_github" href="#">GitHub</a>
+          <a class="chip" data-link="me_linkedin" href="#">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<aside class="qr-dock" aria-label="Scan to open this page">
+  <div class="qr" id="qr"></div>
+  <strong>Scan to try it on your phone</strong>
+  <span id="qr-url"></span>
+</aside>
+<div class="present-hint" aria-hidden="true">Touch anything to explore</div>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" data-link="ohs" href="#">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="brand-name">Open Health Stack<small>Software Foundation</small></span>
+    </a>
+    <span>Shown at the Global Digital Health Forum 2026, Bangkok, December 2–4.</span>
+    <span class="fine">Open Health Stack Software Foundation · a project of the Linux Foundation.</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* ============================================================
+   LINKS — fill these in. Anything left empty shows as "available soon".
+   ============================================================ */
+const LINKS = {
+  web:         "",                                             // hosted web app
+  android:     "",                                             // APK, e.g. a GitHub Release asset
+  ios:         "",                                             // TestFlight public link
+  macos:       "",                                             // .dmg
+  windows:     "",                                             // .msi / .exe
+  deploy:      "mailto:fred@ohs.foundation?subject=Partnering%20with%20OHS%20(via%20GDHF%202026)",                                             // OHS deployment / partnership contact
+  agent_skills:"https://github.com/ohs-foundation/agent-skills",
+  agent_video: "",                                             // video of an agent building the demo app
+  ai_commons:  "https://ohs.foundation/projects#ai",
+  github:      "https://github.com/ohs-foundation",
+  discord:     "https://discord.gg/pDPrS3hXQ",                                             // OHS Discord invite
+  calendar:    "https://tinyurl.com/y4axmtm9",
+  mailing:     "https://ohs.foundation/community#subscribe",
+  membership:  "https://ohs.foundation/foundation#membership",
+  ohs:         "https://ohs.foundation/",
+  contact:     "mailto:fmilano@ona.io?subject=OHS%20FHIR%20libraries%20(via%20GDHF%202026)",                                             // YOUR booking link: technical and adoption calls
+  me_github:   "https://github.com/FikriMilano",                                             // your GitHub profile
+  me_linkedin: "https://www.linkedin.com/in/fikri-milano/",                                             // your LinkedIn
+};
+const AVATAR_URL = "";                                         // optional: path to your photo
+
+document.querySelectorAll("[data-link]").forEach(el => {
+  const url = LINKS[el.dataset.link];
+  if (url) {
+    el.href = url;
+    if (/^https?:/.test(url)) { el.target = "_blank"; el.rel = "noopener"; }
+  } else {
+    el.setAttribute("aria-disabled", "true");
+    el.removeAttribute("href");
+  }
+});
+
+if (AVATAR_URL) {
+  const a = document.getElementById("avatar");
+  a.textContent = "";
+  const img = new Image(); img.src = AVATAR_URL; img.alt = "";
+  a.appendChild(img);
+}
+
+
+/* ============================================================
+   PRESENTER MODE
+   ============================================================ */
+const QR_URL = "";   // optional: the exact URL to encode. Empty = this page's own address.
+const IDLE_MS = 30000, STEP_MS = 9000;
+const STOPS = [".hero", "#why", "#install", 'section[aria-labelledby="inside"]', "#ai", ".ask", 'section[aria-labelledby="by"]'];
+let idleTimer = null, stepTimer = null, stop = 0;
+
+function pageUrl() { return QR_URL || (location.origin + location.pathname); }
+
+function drawQR() {
+  const box = document.getElementById("qr");
+  const url = pageUrl();
+  document.getElementById("qr-url").textContent = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  if (box.dataset.done) return;
+  try {
+    const q = qrcode(0, "M"); q.addData(url); q.make();
+    box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    box.dataset.done = "1";
+  } catch (e) { box.textContent = ""; }
+}
+
+function goTo(i) {
+  const el = document.querySelector(STOPS[i]);
+  if (!el) return;
+  const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+}
+function startCycle() {
+  document.documentElement.classList.add("cycling");
+  stop = 0; goTo(stop);
+  stepTimer = setInterval(() => { stop = (stop + 1) % STOPS.length; goTo(stop); }, STEP_MS);
+}
+function stopCycle() {
+  document.documentElement.classList.remove("cycling");
+  clearInterval(stepTimer); stepTimer = null;
+}
+function onActivity() {
+  if (!document.documentElement.classList.contains("present")) return;
+  if (stepTimer) stopCycle();
+  clearTimeout(idleTimer); idleTimer = setTimeout(startCycle, IDLE_MS);
+}
+function applyMode() {
+  const on = location.hash === "#present";
+  document.documentElement.classList.toggle("present", on);
+  if (on) { drawQR(); onActivity(); } else { stopCycle(); clearTimeout(idleTimer); }
+}
+["mousemove", "mousedown", "keydown", "wheel", "touchstart"].forEach(ev =>
+  addEventListener(ev, onActivity, { passive: true }));
+addEventListener("hashchange", applyMode);
+applyMode();
+
+/* Copy buttons on install commands */
+document.querySelectorAll(".cmd .copy").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const code = btn.parentElement.querySelector("code");
+    const text = code.textContent;
+    try { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(code); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); btn.textContent = "Selected"; }
+    setTimeout(() => (btn.textContent = "Copy"), 1600);
+  });
+});
+
+/* Unique subject per click on email links, so each conversation gets its own thread */
+function refCode() {
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c = "";
+  const r = (window.crypto && crypto.getRandomValues) ? crypto.getRandomValues(new Uint8Array(6)) : Array.from({length: 6}, () => Math.random() * 256);
+  for (const n of r) c += a[n % a.length];
+  return c;
+}
+document.querySelectorAll('[data-link]').forEach(el => {
+  const base = LINKS[el.dataset.link];
+  if (!base || !base.startsWith("mailto:") || !base.includes("subject=")) return;
+  el.addEventListener("click", () => {
+    const [addr, query] = base.split("?");
+    const params = new URLSearchParams(query);
+    params.set("subject", params.get("subject") + " · Ref " + refCode());
+    el.href = addr + "?" + params.toString().replace(/\+/g, "%20");
+  });
+});
+</script>
+</body>
+</html>
