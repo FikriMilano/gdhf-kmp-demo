@@ -331,6 +331,16 @@ footer .fine { border-top: 1px solid rgba(255,255,255,.1); padding-top: 18px; ma
   .axis span.pad-r { display: none; }
 }
 
+/* Larger tap targets on touch screens (about 44px) */
+@media (pointer: coarse), (max-width: 600px) {
+  .copy { min-height: 36px; min-width: 64px; padding: 8px 12px; font-size: 13px; top: 6px; right: 6px; }
+  .cmd { padding-right: 84px; min-height: 52px; }
+  .ask-links { gap: 4px 22px; }
+  .ask-links a { display: inline-flex; align-items: center; min-height: 44px; padding-bottom: 0; border-bottom: 0; text-decoration: underline; text-decoration-color: rgba(255,255,255,.4); text-underline-offset: 6px; }
+  .brand { min-height: 44px; }
+  .chip { min-height: 44px; }
+}
+
 /* ============================================================
    PRESENTER MODE — open the page with #present at the end of the URL
    ============================================================ */
