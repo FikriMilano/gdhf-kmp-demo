@@ -184,6 +184,8 @@ a.card:hover { border-color: var(--purple-3); transform: translateY(-2px); box-s
 .agent h3 { font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 .agent h3 .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--purple-3); }
 .agent .hint { font-size: 14px; margin: 0; }
+.agent .num { font-weight: 800; font-size: 40px; line-height: 1; letter-spacing: -.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.agent .num small { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: 0; }
 .cmd { position: relative; background: var(--dark); color: #E6EEEE; border-radius: 12px; padding: 12px 72px 12px 14px; font-family: var(--mono); font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 46px; }
 .cmd .p { color: var(--eyebrow-dark); user-select: none; }
 .copy { position: absolute; top: 9px; right: 9px; min-width: 56px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #fff; border-radius: 8px; font: 600 11.5px var(--font); padding: 5px 8px; cursor: pointer; }
@@ -508,7 +510,7 @@ html.present.cycling .present-hint { opacity: .55; }
       <a class="card" data-link="macos" data-os="macos" href="#" data-goatcounter-click="download-macos">
         <span class="tile t-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
         <span class="k">macOS</span>
-        <span class="d">Desktop app for Mac.</span>
+        <span class="d">For Macs with Apple chips (M1 or newer). The first time, right-click the app and choose Open.</span>
         <span class="cta">Download for Mac <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
       <a class="card" data-link="windows" data-os="windows" href="#" data-goatcounter-click="download-windows">
@@ -574,32 +576,28 @@ html.present.cycling .present-hint { opacity: .55; }
   <div class="wrap">
     <p class="eyebrow">Build with AI</p>
     <h2 id="ai-h">Your coding agent, fluent in FHIR.</h2>
-    <p class="sub">OHS agent skills teach Antigravity, Claude and Codex to build on the tested FHIR Foundations libraries instead of writing FHIR code from scratch. Standards compliance comes with the foundations.</p>
+    <p class="sub">We gave coding agents three short skill files for the OHS libraries and asked them to build an offline antenatal care app with FHIR sync. With the skills, five of six models built an app that passed every check. Without FHIR, the same agents built apps that scored 4/10.</p>
+    <!-- Results from https://ohs.foundation/blog/fhir-standards-tax (5 Nov 2026). The installable
+         plugins aren't released yet. When they are, add the install commands back here. -->
     <div class="agents">
-<!-- VERIFY: the marketplace and plugin names below follow the agent-skills repo plan; confirm before publishing -->
         <div class="agent">
-          <h3><span class="dot" aria-hidden="true"></span>Antigravity CLI</h3>
-          <p class="hint">Run in your terminal.</p>
-          <div class="cmd"><span class="p">$ </span><code>agy plugin install https://github.com/ohs-foundation/agent-skills</code><button class="copy" type="button" data-goatcounter-click="copy-antigravity">Copy</button></div>
+          <span class="num">10/10</span>
+          <p class="hint">Score with the skills, for five of six models (Claude Sonnet, Opus and Fable, Gemini Flash and Argon).</p>
         </div>
         <div class="agent">
-          <h3><span class="dot" aria-hidden="true"></span>Claude Code</h3>
-          <p class="hint">Run as two separate prompts in Claude Code.</p>
-          <div class="cmd"><span class="p">$ </span><code>/plugin marketplace add ohs-foundation/agent-skills</code><button class="copy" type="button" data-goatcounter-click="copy-claude-1">Copy</button></div>
-          <div class="cmd"><span class="p">$ </span><code>/plugin install ohs@agent-skills</code><button class="copy" type="button" data-goatcounter-click="copy-claude-2">Copy</button></div>
+          <span class="num">$0.54</span>
+          <p class="hint">Cost of the fastest 10/10 build, in 3.2 minutes.</p>
         </div>
         <div class="agent">
-          <h3><span class="dot" aria-hidden="true"></span>Codex</h3>
-          <p class="hint">Run in your terminal.</p>
-          <div class="cmd"><span class="p">$ </span><code>codex plugin marketplace add ohs-foundation/agent-skills</code><button class="copy" type="button" data-goatcounter-click="copy-codex-1">Copy</button></div>
-          <div class="cmd"><span class="p">$ </span><code>codex plugin add ohs@agent-skills</code><button class="copy" type="button" data-goatcounter-click="copy-codex-2">Copy</button></div>
+          <span class="num">2 <small>vs 11</small></span>
+          <p class="hint">Times per build the agent had to dig through compiled library code, with skills vs without.</p>
         </div>
     </div>
     <div class="ai-proof">
-      <p><strong>Part of AI Commons,</strong> the Open Health Stack pillar for safe, verifiable AI in global health.</p>
+      <p><strong>Skills for Kotlin FHIR, Data Capture and Engine.</strong> Installable plugins for Claude Code, Codex and Antigravity are coming soon. Part of AI Commons, the Open Health Stack pillar for safe, verifiable AI in global health.</p>
       <div class="links">
-        <a class="chip strong" data-link="agent_video" href="#" data-goatcounter-click="agent-video">Watch an agent build this app</a>
-        <a class="chip" data-link="agent_skills" href="#" data-goatcounter-click="agent-skills">agent-skills on GitHub</a>
+        <a class="chip strong" data-link="ai_blog" href="#" data-goatcounter-click="ai-blog">Read the experiment</a>
+        <a class="chip" data-link="agent_skills" href="#" data-goatcounter-click="agent-skills">See the skills on GitHub</a>
         <a class="chip" data-link="ai_commons" href="#" data-goatcounter-click="ai-commons">AI Commons</a>
       </div>
     </div>
@@ -672,14 +670,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    LINKS — fill these in. Anything left empty shows as "available soon".
    ============================================================ */
 const LINKS = {
-  web:         "",                                             // hosted web app
-  android:     "",                                             // APK, e.g. a GitHub Release asset
+  web:         "https://gdhf.fikrimilano.com",                                             // hosted web app
+  android:     "https://github.com/FikriMilano/gdhf-anc-demo/releases/download/v1.0.0/Antenatal-Care-Demo-1.0.apk",                                             // APK, e.g. a GitHub Release asset
   ios:         "",                                             // TestFlight public link
-  macos:       "",                                             // .dmg
-  windows:     "",                                             // .msi / .exe
+  macos:       "https://github.com/FikriMilano/gdhf-anc-demo/releases/download/v1.0.0/Antenatal-Care-Demo-1.0.0.dmg",                                             // .dmg
+  windows:     "https://github.com/FikriMilano/gdhf-anc-demo/releases/download/v1.0.0/Antenatal-Care-Demo-1.0.0.msi",                                             // .msi / .exe
   deploy:      "mailto:fred@ohs.foundation?subject=Partnering%20with%20OHS%20(via%20GDHF%202026)",                                             // OHS deployment / partnership contact
-  agent_skills:"https://github.com/ohs-foundation/agent-skills",
-  agent_video: "",                                             // video of an agent building the demo app
+  agent_skills:"https://github.com/ohs-foundation/labs-ohs-agent/tree/main/skills",
+  ai_blog:     "https://ohs.foundation/blog/fhir-standards-tax",
   ai_commons:  "https://ohs.foundation/projects#ai",
   github:      "https://github.com/ohs-foundation",
   discord:     "https://discord.gg/pDPrS3hXQ",                                             // OHS Discord invite
