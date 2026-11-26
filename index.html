@@ -591,21 +591,21 @@ html.present.cycling .present-hint { opacity: .55; }
   <div class="wrap">
     <p class="eyebrow">Build with AI</p>
     <h2 id="ai-h">Your coding agent, fluent in FHIR.</h2>
-    <p class="sub">We gave coding agents three short skill files for the OHS libraries and asked them to build an offline antenatal care app with FHIR sync. With the skills, five of six models built an app that passed every check. Without FHIR, the same agents built apps that scored 4/10.</p>
+    <p class="sub">In our test, AI coding agents with OHS skills built a prototype offline FHIR app in minutes, for about 50 cents more than a custom app that doesn't follow the standard. Adding the skills cut build cost by up to 5&times;, and five of six models passed every check.</p>
     <!-- Results from https://ohs.foundation/blog/fhir-standards-tax (5 Nov 2026). The installable
          plugins aren't released yet. When they are, add the install commands back here. -->
     <div class="agents">
         <div class="agent">
-          <span class="num">10/10</span>
-          <p class="hint">Score with the skills, for five of six models (Claude Sonnet, Opus and Fable, Gemini Flash and Argon).</p>
+          <span class="num">$0.50</span>
+          <p class="hint">Average extra cost of a fully working FHIR app over a custom app that scored 4/10.</p>
         </div>
         <div class="agent">
-          <span class="num">$0.54</span>
-          <p class="hint">Cost of the fastest 10/10 build, in 3.2 minutes.</p>
+          <span class="num">5&times; <small>cheaper</small></span>
+          <p class="hint">Builds cost up to 5&times; less than with the libraries alone, and pass all 10 checks.</p>
         </div>
         <div class="agent">
-          <span class="num">2 <small>vs 11</small></span>
-          <p class="hint">Times per build the agent had to dig through compiled library code, with skills vs without.</p>
+          <span class="num">Any agent</span>
+          <p class="hint">The same skill files worked with Claude and Gemini, using the open Agent Skills format.</p>
         </div>
     </div>
     <div class="ai-proof">
