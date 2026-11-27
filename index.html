@@ -435,7 +435,7 @@ html.present.cycling .present-hint { opacity: .55; }
     <p class="eyebrow">Watch</p>
     <h2 id="film-h">See it in 49 seconds.</h2>
     <p class="sub">A form that works things out as you type, FHIR resources and care plans made on the device, the same app on every screen, and sync when the signal comes back.</p>
-    <video controls playsinline preload="metadata" poster="video/poster.jpg" width="1920" height="1080" data-goatcounter-click="play-film">
+    <video controls muted loop playsinline preload="metadata" poster="video/poster.jpg" width="1920" height="1080" data-goatcounter-click="play-film">
       <source src="video/promo.mp4" type="video/mp4">
       <a href="video/promo.mp4">Download the video</a>
     </video>
@@ -819,6 +819,18 @@ document.querySelectorAll('[data-link]').forEach(el => {
     el.href = addr + "?" + params.toString().replace(/\+/g, "%20");
   });
 });
+// The film plays muted while it is on screen (browsers only autoplay muted video), unless the visitor prefers reduced motion.
+// If the visitor pauses it, it stays paused.
+const film = document.querySelector(".film video");
+if (film && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  let held = false, ours = false;
+  film.addEventListener("pause", () => { if (!ours) held = true; ours = false; });
+  new IntersectionObserver(([e]) => {
+    if (held) return;
+    if (e.isIntersecting) film.play().catch(() => {});
+    else if (!film.paused) { ours = true; film.pause(); }
+  }, { threshold: 0.5 }).observe(film);
+}
 </script>
 <script data-goatcounter="https://fikrimilano.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
