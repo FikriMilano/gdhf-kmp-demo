@@ -131,6 +131,8 @@ h1, h2, h3 { color: var(--ink); letter-spacing: -.02em; margin: 0; }
 /* Sections */
 section.block { padding-block: 56px; }
 section.alt { background: var(--bg-alt); }
+.film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 24px; background: #000; box-shadow: 0 30px 60px -40px rgba(24,34,36,.45); }
+@media (max-width: 600px) { .film video { border-radius: 16px; } }
 .block h2 { font-size: clamp(30px, 5vw, 44px); line-height: 1.08; font-weight: 700; margin-bottom: 12px; text-wrap: balance; }
 .sub { font-size: 18px; max-width: 58ch; margin: 0 0 28px; }
 
@@ -425,6 +427,18 @@ html.present.cycling .present-hint { opacity: .55; }
         <ul class="pills"><li>HL7® FHIR®</li><li>R4 · R4B · R5</li></ul>
       </div>
     </figure>
+  </div>
+</section>
+
+<section class="block film" id="film" aria-labelledby="film-h">
+  <div class="wrap">
+    <p class="eyebrow">Watch</p>
+    <h2 id="film-h">See it in 49 seconds.</h2>
+    <p class="sub">A form that works things out as you type, FHIR resources and care plans made on the device, the same app on every screen, and sync when the signal comes back.</p>
+    <video controls playsinline preload="metadata" poster="video/poster.jpg" width="1920" height="1080" data-goatcounter-click="play-film">
+      <source src="video/promo.mp4" type="video/mp4">
+      <a href="video/promo.mp4">Download the video</a>
+    </video>
   </div>
 </section>
 
@@ -730,7 +744,7 @@ if (AVATAR_URL) {
    ============================================================ */
 const QR_URL = "";   // optional: the exact URL to encode. Empty = this page's own address.
 const IDLE_MS = 30000, STEP_MS = 9000;
-const STOPS = [".hero", "#why", "#install", 'section[aria-labelledby="inside"]', "#ai", ".ask", 'section[aria-labelledby="by"]'];
+const STOPS = [".hero", "#film", "#why", "#install", 'section[aria-labelledby="inside"]', "#ai", ".ask", 'section[aria-labelledby="by"]'];
 let idleTimer = null, stepTimer = null, stop = 0;
 
 function pageUrl() { return QR_URL || (location.origin + location.pathname); }
